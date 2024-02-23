@@ -1,9 +1,11 @@
 import java.util.*;
 import java.math.*;
 import java.io.*;
+
 /*  Author: Tri Dao
     Date:   19/05/2022
     Purpose:    Create statistics from an imported csv file about covid-19 in relation to their countries as per user's request */
+
 public class TheBigPicture
 {
     public static void main(String[] args)
@@ -19,12 +21,7 @@ public class TheBigPicture
         String dateChoice = "31/12/2021";
         String displayMessage = "the world";
 
-        importCountryCSVData(countryArray);
-        importCovidRecordCSVData(covidRecordArray);
-        for(int i = 0; i < 1777; i++)
-        {//mutating country object inside of covidRecord object has to be done where both objects "exists" at the same time.
-            covidRecordArray[i].setCountry(countryArray[i]);
-        }
+        importCSVData(covidRecordArray, countryArray);
 
         menuOneOption = menuOne();
         while(menuOneOption != 0)
@@ -290,15 +287,15 @@ public class TheBigPicture
                 System.out.println(pRawData + " people tested positive for Covid-19 per day");
             break;
             case 5:
-                System.out.println(pPercentageData + " people died from Covid-19 out of " + pRawData);
+                System.out.println(pPercentageData + " percent of people died from Covid-19 out of " + pRawData);
             break;
             case 6:
-                System.out.println(pPercentageData + " people recovered from Covid-19 out of " + pRawData);
+                System.out.println(pPercentageData + " percent of people recovered from Covid-19 out of " + pRawData);
             break;
        }
     }
 
-    public static Country[] importCountryCSVData(Country[] pCountryArray)
+    public static CovidRecord[] importCSVData(CovidRecord[] pCovidRecordArray, Country[] pCountryArray)
     {
         FileInputStream inputStream = null;
         InputStreamReader streamReader;
@@ -308,23 +305,22 @@ public class TheBigPicture
 
         try
         {
-            inputStream = new FileInputStream("jrc-covid-19-all-days-of-world_ASSIGNMENT-FIXED.csv");
+            /*open file */
+            inputStream = new FileInputStream("jrc-covid-19-all-days-of-world.csv");
             streamReader = new InputStreamReader(inputStream);
             buffReader = new BufferedReader(streamReader);
             String[] splitLine;
-            if(inputStream == null)
-            {
-                System.out.println("Empty file! Invalid!");
-            }
+
             lineNum = 0;
             line = buffReader.readLine();
             line = buffReader.readLine();
             while((line != null) && (lineNum <= 1778))
             {
+                int i = lineNum;
                 lineNum++;
-                int i = (lineNum - 1);
                 splitLine = line.split(",", 13);
 
+                /*Creating the country object and importing data in */
                 Country countryObj = new Country();
                 countryObj.setIso3(splitLine[1]);
                 countryObj.setContinent(splitLine[2]);
@@ -333,76 +329,34 @@ public class TheBigPicture
                 countryObj.setLat(Double.parseDouble(splitLine[4]));
                 countryObj.setLongitudeCoordinate(Double.parseDouble(splitLine[5]));
                 pCountryArray[i] = countryObj;
-                line = buffReader.readLine();
-            }
-            inputStream.close();
-        }
-        catch(IOException error)
-        {
-            if(inputStream != null)
-            {
-                try
-                {
-                    inputStream.close();
-                }
-                catch(IOException error2)
-                {
-                }
-            }
-            System.out.println("Error in file processing: " + error.getMessage());
-        }
-        return pCountryArray;
-    }       
 
-    public static CovidRecord[] importCovidRecordCSVData(CovidRecord[] pCovidRecordArray)
-    {
-        FileInputStream inputStream = null;
-        InputStreamReader streamReader;
-        BufferedReader buffReader;
-        int lineNum;
-        String line;
-
-        try
-        {
-            inputStream = new FileInputStream("jrc-covid-19-all-days-of-world_ASSIGNMENT-FIXED.csv");
-            streamReader = new InputStreamReader(inputStream);
-            buffReader = new BufferedReader(streamReader);
-            String[] splitLine;
-            if(inputStream == null)
-            {
-                System.out.println("Empty file! Invalid!");
-            }
-            lineNum = 0;
-            line = buffReader.readLine();
-            line = buffReader.readLine();
-            while((line != null) && (lineNum <= 1778))
-            {
-                lineNum++;
-                int i = (lineNum - 1);
-                splitLine = line.split(",", 13);
-
+                /*Creating an array of integers for integer data in the record.*/
                 CovidRecord covidRecordObj = new CovidRecord();
                 covidRecordObj.setDate(splitLine[0]);
-                String zero = "";
-                int[] splitLineInterpreted = new int[13];
+
+                int[] splitLineInterpreted = new int[6];
                 for(int j = 6; j < 12; j++)
                 {
-                    if(splitLine[j].equals(zero))
+                    if(splitLine[j].equals(""))
                     {
-                        splitLineInterpreted[j] = 0;
+                        splitLineInterpreted[j - 6] = 0;
                     }
                     else
                     {
-                        splitLineInterpreted[j] = Integer.parseInt(splitLine[j]);
+                        splitLineInterpreted[j - 6] = Integer.parseInt(splitLine[j]);
                     }
                 }
-                covidRecordObj.setCumulativePositive(splitLineInterpreted[6]);
-                covidRecordObj.setCumulativeDeceased(splitLineInterpreted[7]);
-                covidRecordObj.setCumulativeRecovered(splitLineInterpreted[8]);
-                covidRecordObj.setCurrentlyPositive(splitLineInterpreted[9]);
-                covidRecordObj.setHospitalized(splitLineInterpreted[10]);
-                covidRecordObj.setIntensiveCare(splitLineInterpreted[11]);
+
+                /*Creating covid record object and importing data in.*/
+                covidRecordObj.setCumulativePositive(splitLineInterpreted[0]);
+                covidRecordObj.setCumulativeDeceased(splitLineInterpreted[1]);
+                covidRecordObj.setCumulativeRecovered(splitLineInterpreted[2]);
+                covidRecordObj.setCurrentlyPositive(splitLineInterpreted[3]);
+                covidRecordObj.setHospitalized(splitLineInterpreted[4]);
+                covidRecordObj.setIntensiveCare(splitLineInterpreted[5]);
+                covidRecordObj.setCountry(countryObj);
                 pCovidRecordArray[i] = covidRecordObj;
+
                 line = buffReader.readLine();
             }
             inputStream.close();
@@ -501,10 +455,13 @@ public class TheBigPicture
 
         for(int i = 0; i < 1777; i++)
         {//counting pCovidRecordArray
+            
             for(int j = 0; j <= i; j++)
             {//counting tempCovidRecordArray and "selection sorting" it
+                
+                //only run if it is the continent the user asked for
                 if(pCovidRecordArray[i].getCountry().getContinent().equals(pContinentChoice))
-                {//only run if it is the continent user asked for
+                {
                     CovidRecord tempCovidRecordObj = new CovidRecord(pCovidRecordArray[i]);//copy constructor and temp object is used to copy array information rather than assign one array element to another. Takes more memory but is safer. I think.
                     tempCovidRecordArray[i] = tempCovidRecordObj;
 
@@ -531,7 +488,8 @@ public class TheBigPicture
         }
         accumulatedData = scanTempCovidRecordArray(pDataChoice, tempCovidRecordArray);
         return accumulatedData;
-    }//in hindsight, "date checker" could have been made into another method
+    }
+    //in hindsight, "date checker" could have been made into another method
 
     public static long accumulateCountryData(String pCountryChoice, int pDataChoice, CovidRecord [] pCovidRecordArray)
     {
@@ -611,22 +569,22 @@ public class TheBigPicture
         return accumulatedData;
     }
 
-    public static long scanTempCovidRecordArray(int pDataChoice, CovidRecord [] pTempCovidRecordArray)
+    public static int scanTempCovidRecordArray(int pDataChoice, CovidRecord [] pTempCovidRecordArray)
     {
-        long scannedData = 0;
+        int scannedData = 0;
 
         for(int i = 0; i < 1777; i++)
         {
             switch(pDataChoice)
             {
                 case 1:
-                    scannedData += (long)pTempCovidRecordArray[i].getCumulativePositive();
+                    scannedData += (int)pTempCovidRecordArray[i].getCumulativePositive();
                 break;
                 case 2:
-                    scannedData += (long)pTempCovidRecordArray[i].getCumulativeDeceased();
+                    scannedData += (int)pTempCovidRecordArray[i].getCumulativeDeceased();
                 break;
                 case 3:
-                    scannedData += (long)pTempCovidRecordArray[i].getCumulativeRecovered();
+                    scannedData += (int)pTempCovidRecordArray[i].getCumulativeRecovered();
                 break;
             }
         }

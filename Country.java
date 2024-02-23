@@ -99,11 +99,11 @@ public class Country
     public Country()
     {
         iso3 = "AUS";
-        continent = "Oceania";
+        continent = "OC";
         countryName = "Australia";
         nuts = "AU";
-        lat = 0;
-        longitudeCoordinate = 0;
+        lat = -26.853388;
+        longitudeCoordinate = -69.965112;
     }
 
     public Country(Country pCountry)
