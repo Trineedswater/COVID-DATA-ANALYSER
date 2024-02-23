@@ -10,6 +10,7 @@ This project was made to demonstrate object oriented programming implementation 
   - [Usage](#usage)
 - [Country Class](#country-class)
 - [Covid Record Class](#covid-record-class)
+- [Bugs](#bugs)
 
 ## Usage
 
@@ -29,3 +30,9 @@ A class to store data on the country, such as its name, longitude and latitude
 # Covid Record Class
 
 A class to store data related to covid cases of a given country, eg. the number of positive or negative cases, etc.
+
+# Bugs
+
+This repository is no longer being updated.
+
+Data retrieval function and accumulation function does not return the correct data.

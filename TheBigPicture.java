@@ -67,8 +67,11 @@ public class TheBigPicture
                         displayMessage = "the world";
                     break;
                 }
-                switch((Math.abs(menuOneOption - 6) + (menuOneOption - 6)) * 5 + menuTwoOption)//formula used is an if statement written with numbers; if menuOption <= 7 return 0. Then multiply by menuOneOption by 10 and add menuTwoOption
+
+                //formula used is an if statement written with numbers; if menuOneOption < 7, multiply by menuOneOption by 10 and add menuTwoOption
+                switch((Math.abs(menuOneOption - 6) + (menuOneOption - 6)) * 5 + menuTwoOption)
                 {
+
                     case 1: case 2: case 3:
                         cumulativeData = accumulateContinentData(continentChoice, menuTwoOption, covidRecordArray);
                     break;
@@ -114,6 +117,7 @@ public class TheBigPicture
                         outputData = (double) tempData1 / (double) tempData2;
                     break;
                     case 17:
+
                         for(int i = 1; i <= 3; i++)
                         {
                             cumulativeData = accumulateCountryData(countryChoice, i, covidRecordArray);
@@ -196,7 +200,8 @@ public class TheBigPicture
                 {
                     displayToUser(menuTwoOption, cumulativeData, outputData);
                 }
-                tempData1 = 0;//reassign all values back to 0 just in case
+                //reassign all values back to 0 just in case
+                tempData1 = 0;
                 tempData2 = 0;
                 outputData = 0;
                 cumulativeData = 0;
@@ -468,13 +473,15 @@ public class TheBigPicture
                     pCovidRecordDate = parseValue(pCovidRecordArray[i].getDate());
                     tempCovidRecordDate = parseValue(tempCovidRecordArray[j].getDate());
                     //"updating" date stored as counter increases.
+                    //if there is a duplicate covid record for a country in the temp array and it is newer then accept it
                     if((pCovidRecordArray[i].getCountry().getCountryName().equals(tempCovidRecordArray[j].getCountry().getCountryName())) && (pCovidRecordDate > tempCovidRecordDate))
-                    {//if there is a duplicate covid record for a country in the temp array and it is newer then accept it
+                    {
                         CovidRecord covidRecordObj = new CovidRecord();
                         tempCovidRecordArray[j] = covidRecordObj;//replace the later entry with a default object that contains 0 for all information
                     }
+                    //if the duplicate that appears later in the array is not newer
                     else if((pCovidRecordArray[i].getCountry().getCountryName().equals(tempCovidRecordArray[j].getCountry().getCountryName())) && (tempCovidRecordDate > pCovidRecordDate))
-                    {//if the duplicate that appears later in the array is not newer
+                    {
                         CovidRecord covidRecordObj = new CovidRecord();//change the later appearance to a default covid record object
                         tempCovidRecordArray[i] = covidRecordObj;
                     }
